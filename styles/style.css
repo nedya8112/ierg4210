@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Cute+Font&family=Honk&display=swap');
+
+body {
+    font-family: 'Cute Font', sans-serif;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.container {
+    width: 900px;
+    max-width: 90vw;
+    margin: auto;
+    text-align: center;
+    padding-top: 10px;
+}
+
+.container .cart {
+    cursor: pointer;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+    font-size: x-large;
+    font-weight: 500;
+}
+
+.refLink {
+    text-align: left;
+}
+
+.item img {
+    width: 90%;
+    filter: drop-shadow(0 40px 20px #0005);
+}
+
+.listOfItems .catagories,
+.listOfItems .products {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.listOfItems .item {
+    background-color: #ece7ecee;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.product .item img {
+    width: 500px;
+}
+
+.product .inventoryAlert {
+    color: red;
+    font-size: large;
+}
+
+.item h2 {
+    font-weight: 600;
+    font-size: x-large;
+}
+
+.item button {
+    background-color: rgb(222, 192, 237);
+    color: rgb(122, 90, 0);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-family: 'Cute Font', sans-serif;
+    font-size: large;
+    margin-left: 10px;
+}
+
+.cartTab {
+    width: 400px;
+    background-color: black;
+    color: white;
+    inset: 70px -400px 0 auto;
+    display: grid;
+    grid-template-rows: 70px 1fr 70px;
+    transition: .5s;
+    z-index: 1;
+    position: fixed;
+}
+
+.container .cart:hover .cartTab {
+    inset: 70px 0 0 auto;
+}
+
+.cartTab h1 {
+    padding: 20px;
+    margin: 0;
+    font-size: larger;
+    font-weight: 300;
+}
+
+.cartTab .btn button {
+    background-color: rgb(240, 255, 152);
+    color: rgb(11, 90, 129);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-family: 'Cute Font', sans-serif;
+    font-weight: 500;
+    font-size: large;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+.listCart .item img {
+    width: 100%;
+    margin-left: 15px;
+}
+
+.listCart .item .quantity input {
+    width: 30px;
+    height: 15px;
+    background-color: transparent;
+    color: white;
+    font-family: 'Cute Font', sans-serif;
+    font-size: large;
+    text-align: center;
+}
+
+.listCart .item {
+    display: grid;
+    grid-template-columns: 70px 150px 30px 1fr;
+    gap: 10px;
+    text-align: center;
+    align-items: center;
+}
+
+.listCart .item:nth-child(even) {
+    background-color: #eee2;
+}
+
+.listCart {
+    overflow: auto;
+
+}
+
+.listCart::-webkit-scrollbar {
+    width: 0;
+}
+
+footer {
+    margin-top: 50px;
+    margin-bottom: 30px;
+    font-size: larger;
+    font-weight: 600;
+}
