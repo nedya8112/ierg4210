@@ -11,11 +11,11 @@ export default function Home() {
 
   const [categories, setCategories] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     // Fetch initial data
-    getData('route')
+    getData('database')
       .then((data) => {
         // Handle the fetched data
         setCategories(data.categories);
@@ -75,10 +75,10 @@ export default function Home() {
             />
           </header>
 
-          <div class="refLink">
+          <div class="ref-link">
             <span><Link href="">Home</Link></span>
           </div>
-          <div class="listOfItems">
+          <div class="list-of-items">
             <h1>Catagories</h1>
             <div class="catagories">
               {categories.map((category) => (

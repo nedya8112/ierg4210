@@ -17,7 +17,7 @@ export default function Category() {
     useEffect(() => {
         // Fetch initial data
         if (router.isReady) {
-            getData('route')
+            getData('database')
                 .then((data) => {
                     // Handle the fetched data
                     setCategory(data.categories.find(category => category.cid == router.query.cid));
@@ -93,12 +93,12 @@ export default function Category() {
                             clearCart={clearCart}
                         />
                     </header>
-                    <div class="refLink">
+                    <div class="ref-link">
                         <span><Link href="/">Home</Link></span>
                         <span> &gt; </span>
                         <span><Link href="#home">{category.name}</Link></span>
                     </div>
-                    <div class="listOfItems">
+                    <div class="list-of-items">
                         <h1>{category.name}</h1>
                         <div class="products">
                             {products.map((product) => (
@@ -114,7 +114,7 @@ export default function Category() {
                                         <span>${product.price.toFixed(2)}</span>
                                     </div>
                                     <span>
-                                        <button class="addCart" onClick={() => addToCart(product)}>Add To Cart</button>
+                                        <button class="add-cart" onClick={() => addToCart(product)}>Add To Cart</button>
                                     </span>
                                 </div>
                             ))}

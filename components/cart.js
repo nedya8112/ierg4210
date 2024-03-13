@@ -9,12 +9,12 @@ const Cart = ({ cartItems, changeCartItemQuantity, clearCart }) => {
                 SHOPPING LIST ${cartItems.reduce((acc, obj) =>
                     acc + obj.price * obj.quantity, 0).toFixed(2)}
             </>}
-            <div class="cartTab">
+            <div class="cart-tab">
                 {<h1>
                     Shopping List (Total: ${cartItems.reduce((acc, obj) =>
                         acc + obj.price * obj.quantity, 0).toFixed(2)})
                 </h1>}
-                <div class="listCart">
+                <div class="list-cart">
                     {cartItems.map((item) => (
                         <div class="item" key={item.pid}>
                             <div class="image">

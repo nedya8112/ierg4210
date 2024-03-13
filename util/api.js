@@ -13,15 +13,20 @@ export async function getData(endpoint) {
 
 export async function postData(endpoint, formData) {
     try {
-        console.log(formData);
-        const response = await fetch(`/api/${endpoint}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        });
+        const reqInit = endpoint === 'database' ?
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            } :
+            {
+                method: 'POST',
+                body: formData
+            }
 
+        const response = await fetch(`/api/${endpoint}`, reqInit);
         const data = await response.json();
         return data;
     } catch (error) {

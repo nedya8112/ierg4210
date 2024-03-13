@@ -1,57 +1,39 @@
-import { promises as fs } from "fs";
-import path from "path";
-import formidable, { File } from 'formidable';
+import { IncomingForm } from 'formidable';
+import { promises as fs } from 'fs';
 
+// Disable the default body parser
 export const config = {
     api: {
         bodyParser: false,
     }
 };
 
+export default async (req, res) => {
+    if (req.method === 'POST') {
 
-const handler = async (req, res) => {
-
-    let status = 200,
-        resultBody = { status: 'ok', message: 'Files were uploaded successfully' };
-
-    /* Get files using formidable */
-    const files = await new Promise < ProcessedFiles | undefined > ((resolve, reject) => {
-        const form = new formidable.IncomingForm();
-        const files = [];
-        form.on('file', function (field, file) {
-            files.push([field, file]);
-        })
-        form.on('end', () => resolve(files));
-        form.on('error', err => reject(err));
-        form.parse(req, () => {
-            //
+        // Parse form with a Promise wrapper
+        const data = await new Promise((resolve, reject) => {
+            const form = new IncomingForm();
+            form.parse(req, (err, fields, files) => {
+                if (err) return reject(err);
+                resolve({ fields, files });
+            });
         });
-    }).catch(e => {
-        console.log(e);
-        status = 500;
-        resultBody = {
-            status: 'fail', message: 'Upload error'
-        }
-    });
 
-    if (files?.length) {
-
-        /* Create directory for uploads */
-        const targetPath = path.join(process.cwd(), `/uploads/`);
         try {
-            await fs.access(targetPath);
-        } catch (e) {
-            await fs.mkdir(targetPath);
+            const imageFile = data.files.image[0];
+            const pathToWriteImage = './public/img/' + imageFile.originalFilename;
+            fs.rename(imageFile.filepath, pathToWriteImage, function (err) {
+                if (err) {
+                    res.status(500).json({ error: 'Error occurred during file upload' });
+                    return;
+                }
+            });
+            //store path in DB
+            res.status(200).json({ message: 'Image uploaded!', success: true });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+            return;
         }
-
-        /* Move uploaded files to directory */
-        for (const file of files) {
-            const tempPath = file[1].filepath;
-            await fs.rename(tempPath, targetPath + file[1].originalFilename);
-        }
-    }
-
-    res.status(status).json(resultBody);
-}
-
-export default handler;
+    };
+};

@@ -27,7 +27,7 @@ header {
     font-weight: 500;
 }
 
-.refLink {
+.ref-link {
     text-align: left;
 }
 
@@ -36,14 +36,14 @@ header {
     filter: drop-shadow(0 40px 20px #0005);
 }
 
-.listOfItems .catagories,
-.listOfItems .products {
+.list-of-items .catagories,
+.list-of-items .products {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
 
-.listOfItems .item {
+.list-of-items .item {
     background-color: #ece7ecee;
     padding: 20px;
     border-radius: 20px;
@@ -53,7 +53,7 @@ header {
     width: 500px;
 }
 
-.product .inventoryAlert {
+.product .inventory-alert {
     color: red;
     font-size: large;
 }
@@ -73,7 +73,7 @@ header {
     margin-left: 10px;
 }
 
-.cartTab {
+.cart-tab {
     width: 400px;
     background-color: black;
     color: white;
@@ -85,18 +85,18 @@ header {
     position: fixed;
 }
 
-.container .cart:hover .cartTab {
+.container .cart:hover .cart-tab {
     inset: 70px 0 0 auto;
 }
 
-.cartTab h1 {
+.cart-tab h1 {
     padding: 20px;
     margin: 0;
     font-size: larger;
     font-weight: 300;
 }
 
-.cartTab .btn button {
+.cart-tab .btn button {
     background-color: rgb(240, 255, 152);
     color: rgb(11, 90, 129);
     padding: 2px 10px;
@@ -108,12 +108,12 @@ header {
     cursor: pointer;
 }
 
-.listCart .item img {
+.list-cart .item img {
     width: 100%;
     margin-left: 15px;
 }
 
-.listCart .item .quantity input {
+.list-cart .item .quantity input {
     width: 30px;
     height: 15px;
     background-color: transparent;
@@ -123,7 +123,7 @@ header {
     text-align: center;
 }
 
-.listCart .item {
+.list-cart .item {
     display: grid;
     grid-template-columns: 70px 150px 30px 1fr;
     gap: 10px;
@@ -131,16 +131,16 @@ header {
     align-items: center;
 }
 
-.listCart .item:nth-child(even) {
+.list-cart .item:nth-child(even) {
     background-color: #eee2;
 }
 
-.listCart {
+.list-cart {
     overflow: auto;
 
 }
 
-.listCart::-webkit-scrollbar {
+.list-cart::-webkit-scrollbar {
     width: 0;
 }
 
@@ -149,4 +149,18 @@ footer {
     margin-bottom: 30px;
     font-size: larger;
     font-weight: 600;
+}
+
+/* Admin Panel */
+.admin-panel {
+    background-color: #ece7ecee;
+}
+
+.panel-container {
+    margin-left: 20px;
+}
+
+.flex-container,
+.description {
+    display: flex;
 }

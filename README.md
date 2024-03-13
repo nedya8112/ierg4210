@@ -1,15 +1,15 @@
-# 202324R2 IERG4210 Phase 2
+# 202324R2 IERG4210 Phase 3
 
 ## Description
 
-PHASE 2B: DATA PRESENTATION & MANAGEMENT (DEADLINE FEB. 25, 2024) (SUBTOTAL: 20')
-In this phase, you will implement the core functions of the website mainly with NodeJS and SQL.
+PHASE 3: AJAX SHOPPING LIST (DEADLINE: MAR 10, 2024) (SUBTOTAL: 13')
+In this phase, you will implement the shopping list, which allows users to shop around your products. This phase is designed to let you practise Javascript programming.
 
 ## Getting Started
 
 ### Browsing the website
 
-* Browse http://52.64.242.237/ for home page, http://52.64.242.237/admin for admin panel.
+* Browse http://52.64.242.237/ or http://s28.ierg4210.ie.cuhk.edu.hk/ for home page, http://52.64.242.237/admin or http://s28.ierg4210.ie.cuhk.edu.hk/admin for admin panel.
 
 ## Authors
 

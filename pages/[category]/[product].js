@@ -17,7 +17,7 @@ export default function Product() {
     useEffect(() => {
         // Fetch initial data
         if (router.isReady) {
-            getData('route')
+            getData('database')
                 .then((data) => {
                     // Handle the fetched data
                     setCategory(data.categories.find(category => category.cid == router.query.cid));
@@ -93,7 +93,7 @@ export default function Product() {
                             clearCart={clearCart}
                         />
                     </header>
-                    <div class="refLink">
+                    <div class="ref-link">
                         <span><Link href="/">Home</Link></span>
                         <span> &gt; </span>
                         <span><Link href="" onClick={(e) => {
@@ -112,10 +112,13 @@ export default function Product() {
                             <h2>{product.name}</h2>
                             <span>${product.price?.toFixed(2)}</span>
                             <span>
-                                <button class="addCart" onClick={() => addToCart(product)}>Add To Cart</button>
+                                <button class="add-cart" onClick={() => addToCart(product)}>Add To Cart</button>
                             </span>
                             <p>{product.description}</p>
-                            <span>Inventory: {product.quantity}</span>
+                            <div>Inventory: {product.quantity}</div>
+                            {product.quantity <= 3 && (
+                                <div class="inventory-alert">Only {product.quantity} left!</div>
+                            )}
                         </div>
                     </div>
                     <footer>

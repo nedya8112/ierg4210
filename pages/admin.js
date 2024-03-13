@@ -15,7 +15,7 @@ export default function Admin() {
     let i = 0;
     useEffect(() => {
         // Fetch initial data
-        getData('route')
+        getData('database')
             .then((data) => {
                 // Handle the fetched data
                 console.log(i++);
@@ -35,28 +35,26 @@ export default function Admin() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-
         // File
-        // if (e.target.image) {
-        //     const fileFormData = new FormData();
-        //     fileFormData.set('image', e.target.image.files[0]);
-        //     console.log(fileFormData);
-        // postData('upload', fileFormData)
-        //     .then((data) => {
-        //         if (data.success !== true) {
-        //             window.alert(JSON.stringify(data));
-        //         }
-        //     })
-        //     .catch((error) => {
-        //         // Handle errors
-        //         console.error(error);
-        //     });
-
-        // }
+        if (e.target.image) {
+            const fileFormData = new FormData();
+            fileFormData.set('image', e.target.image.files[0]);
+            postData('upload', fileFormData)
+                .then((data) => {
+                    if (data.success !== true) {
+                        window.alert(JSON.stringify(data));
+                    }
+                })
+                .catch((error) => {
+                    // Handle errors
+                    console.error(error);
+                });
+        }
 
         // DB
         const dbFormData = new FormData(e.target);
-        postData('route', Object.fromEntries(dbFormData))
+        dbFormData.set('image', e.target.image.files[0].name);
+        postData('database', Object.fromEntries(dbFormData))
             .then((data) => {
                 // Handle the updated data
                 console.log(data);
@@ -90,6 +88,7 @@ export default function Admin() {
         if (e.target.files && e.target.files.length > 0) {
             setSelectedImages({ ...selectedImages, [e.target.id]: e.target.files[0] });
         }
+        console.log(selectedImages)
     };
 
     return (
@@ -100,14 +99,14 @@ export default function Admin() {
                 <title>JaydenTV Mall Admin Panel</title>
             </Head>
 
-            <main style={{ "background-color": "#ece7ecee" }}>
-                <div class="container" style={{ margin: 20 + "px;" }}>
+            <main class="admin-panel" >
+                <div class="panel-container">
                     <header>
                         <div class="title">
                             <h1>JAYDENTV MALL - ADMIN PANEL</h1>
                         </div>
                     </header>
-                    <div class="flex-container" style={{ display: "flex" }}>
+                    <div class="flex-container">
                         <div class="add-category">
                             <form onSubmit={handleSubmit}>
                                 <input type="hidden" name="type" value="add-category" />
@@ -119,9 +118,9 @@ export default function Admin() {
                                     </div>
                                     <div class="image">
                                         <label for="image">Image</label>
-                                        <input type="file" name="image" id="addCategory" onChange={handleImageSelect} accept="image/png, image/jpeg, image/gif" />
-                                        {selectedImages.addCategory && (
-                                            <img src={URL.createObjectURL(selectedImages.addCategory)} alt="Preview" />
+                                        <input type="file" name="image" id="add-category-image" onChange={handleImageSelect} accept="image/png, image/jpeg, image/gif" />
+                                        {selectedImages['add-category-image'] && (
+                                            <img src={URL.createObjectURL(selectedImages['add-category-image'])} alt="Preview" />
                                         )}
                                     </div>
                                     <br />
@@ -186,7 +185,7 @@ export default function Admin() {
                     </div>
                     <br />
                     <br />
-                    <div class="flex-container" style={{ display: "flex" }}>
+                    <div class="flex-container">
                         <div class="add-product">
                             <form onSubmit={handleSubmit}>
                                 <input type="hidden" name="type" value="add-product" />
@@ -211,7 +210,7 @@ export default function Admin() {
                                         <label for="price">Price</label>
                                         <input type="number" name="price" id="price" required />
                                     </div>
-                                    <div class="description" style={{ display: "flex" }}>
+                                    <div class="description">
                                         <label for="description">Description</label>
                                         <textarea name="description" id="description" cols="20" rows="2" required></textarea>
                                     </div>
@@ -221,9 +220,9 @@ export default function Admin() {
                                     </div>
                                     <div class="image">
                                         <label for="image">Image</label>
-                                        <input type="file" name="image" id="addProduct" onChange={handleImageSelect} accept="image/png, image/jpeg, image/gif" />
-                                        {selectedImages.addProduct && (
-                                            <img src={URL.createObjectURL(selectedImages.addProduct)} alt="Preview" />
+                                        <input type="file" name="image" id="add-product-image" onChange={handleImageSelect} accept="image/png, image/jpeg, image/gif" />
+                                        {selectedImages['add-product-image'] && (
+                                            <img src={URL.createObjectURL(selectedImages['add-product-image'])} alt="Preview" />
                                         )}
                                     </div>
                                     <br />
@@ -288,7 +287,7 @@ export default function Admin() {
                                         <label for="price">Price</label>
                                         <input type="number" name="price" id="price" required defaultValue={selectedProduct.price} />
                                     </div>
-                                    <div class="description" style={{ display: "flex" }}>
+                                    <div class="description">
                                         <label for="description">Description</label>
                                         <textarea name="description" id="description" cols="20" rows="2" required defaultValue={selectedProduct.description} ></textarea>
                                     </div>
