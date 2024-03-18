@@ -14,6 +14,7 @@ export default async (req, res) => {
         // Parse form with a Promise wrapper
         const data = await new Promise((resolve, reject) => {
             const form = new IncomingForm();
+            form.maxFileSize = 5 * 1024 * 1024;
             form.parse(req, (err, fields, files) => {
                 if (err) return reject(err);
                 resolve({ fields, files });

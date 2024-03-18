@@ -1,39 +1,40 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Image from "next/image";
 
 const Cart = ({ cartItems, changeCartItemQuantity, clearCart }) => {
 
     return (
-        <div class="cart">
+        <div className="cart">
             {<>
                 SHOPPING LIST ${cartItems.reduce((acc, obj) =>
                     acc + obj.price * obj.quantity, 0).toFixed(2)}
             </>}
-            <div class="cart-tab">
+            <div className="cart-tab">
                 {<h1>
                     Shopping List (Total: ${cartItems.reduce((acc, obj) =>
                         acc + obj.price * obj.quantity, 0).toFixed(2)})
                 </h1>}
-                <div class="list-cart">
+                <div className="list-cart">
                     {cartItems.map((item) => (
-                        <div class="item" key={item.pid}>
-                            <div class="image">
-                                <img src="/img/suisei.gif" alt="" />
+                        <div className="item" key={item.pid}>
+                            <div className="image">
+                                <Image src={String.prototype.concat("/img/", item.image)} alt={item.image || "No image"} fill />
                             </div>
-                            <div class="name">{item.name}</div>
-                            <div class="quantity">
+                            <div className="name">{item.name}</div>
+                            <div className="quantity">
                                 <input type="text" name="quantity" id="quantity" value={item.quantity} inputMode="numeric"
                                     onChange={(e) => changeCartItemQuantity(e, item)} />
                             </div>
-                            <div class="unitPrice">@${item.price.toFixed(2)}</div>
+                            <div className="unitPrice">@${item.price.toFixed(2)}</div>
                         </div>
                     ))}
                 </div>
-                <div class="btn">
-                    <button class="checkout">Checkout</button>
+                <div className="btn">
+                    <button className="checkout">Checkout</button>
                 </div>
-                <div class="btn">
-                    <button class="clear" onClick={clearCart}>Clear Cart</button>
+                <div className="btn">
+                    <button className="clear" onClick={clearCart}>Clear Cart</button>
                 </div>
             </div>
         </div>

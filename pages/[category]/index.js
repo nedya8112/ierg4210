@@ -84,44 +84,49 @@ export default function Category() {
             </Head>
 
             <main>
-                <div class="container">
+                <div className="container">
                     <header id="home">
-                        <div class="title">JAYDENTV MALL</div>
+                        <div className="title">JAYDENTV MALL</div>
                         <Cart
                             cartItems={cartItems}
                             changeCartItemQuantity={changeCartItemQuantity}
                             clearCart={clearCart}
                         />
                     </header>
-                    <div class="ref-link">
-                        <span><Link href="/">Home</Link></span>
-                        <span> &gt; </span>
-                        <span><Link href="#home">{category.name}</Link></span>
+                    <div className="links">
+                        <span className="ref-link">
+                            <span><Link href="/">Home</Link></span>
+                            <span> &gt; </span>
+                            <span><Link href="#home">{category.name}</Link></span>
+                        </span>
+                        <span className="admin-panel-link"><Link href="./admin" target="_blank">Admin Panel</Link></span>
                     </div>
-                    <div class="list-of-items">
+                    <div className="list-of-items">
                         <h1>{category.name}</h1>
-                        <div class="products">
+                        <div className="products">
                             {products.map((product) => (
-                                <div class="item" key={product.pid}>
-                                    <div class="item-clickable" onClick={() => {
+                                <div className="item" key={product.pid}>
+                                    <div className="item-clickable" onClick={() => {
                                         router.push({
-                                            pathname: `/${encodeURIComponent(category.name.toLowerCase())}/${encodeURIComponent(product.name.toLowerCase())}`,
+                                            pathname: `/${encodeURIComponent(category.name.toLowerCase().replace(/\s+/g, '-'))}/${encodeURIComponent(product.name.toLowerCase().replace(/\s+/g, '-'))}`,
                                             query: { cid: category.cid, pid: product.pid },
                                         })
                                     }}>
-                                        <img src="/img/suisei.gif" alt="" />
+                                        <div className="image">
+                                            <Image src={String.prototype.concat("/img/", product.image)} alt={product.image || "No image"} fill />
+                                        </div>
                                         <h2>{product.name}</h2>
-                                        <span>${product.price.toFixed(2)}</span>
+                                        <div className="price">${product.price.toFixed(2)}</div>
                                     </div>
-                                    <span>
-                                        <button class="add-cart" onClick={() => addToCart(product)}>Add To Cart</button>
-                                    </span>
+                                    <div className="add-cart">
+                                        <button onClick={() => addToCart(product)}>Add To Cart</button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     </div>
                     <footer>
-                        <div class="footer">
+                        <div className="footer">
                             Thanks for shopping at JaydenTV Mall!!!
                         </div>
                     </footer>

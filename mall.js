@@ -11,7 +11,7 @@ const db = new sqlite3.Database('./mall.db', sqlite3.OPEN_READWRITE, (err) => {
 // sql = `CREATE TABLE categories (cid INTEGER PRIMARY KEY, name TEXT, image TEXT)`;
 // db.run(sql);
 
-// sql = `CREATE TABLE products (pid INTEGER PRIMARY KEY, cid INTEGER, name TEXT, price REAL, description TEXT, quantity INTEGER, image TEXT, FOREIGN KEY(cid) REFERENCES categories(cid))`;
+// sql = `CREATE TABLE products (pid INTEGER PRIMARY KEY, cid INTEGER, name TEXT, price REAL, description TEXT, quantity INTEGER, image TEXT, FOREIGN KEY(cid) REFERENCES categories(cid) ON DELETE RESTRICT)`;
 // db.run(sql);
 
 // Create an index for catid (to make subsequent queries by catid faster)

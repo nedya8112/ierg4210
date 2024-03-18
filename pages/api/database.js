@@ -8,6 +8,8 @@ export default async function handler(req, res) {
         driver: sqlite3.Database, // Specify the database driver (sqlite3 in this case)
     });
 
+    await db.run('PRAGMA foreign_keys = ON');
+
     if (req.method === 'GET') {
         try {
             // Fetch categories and products from the database
@@ -40,7 +42,14 @@ export default async function handler(req, res) {
             // DELETE
             else if (type === 'delete-category') {
                 const { cid } = req.body;
-                await db.run('DELETE FROM categories WHERE cid = (?)', cid);
+                // Check if the category has products
+                const products = await db.all('SELECT * FROM products WHERE cid = ?', cid);
+                if (products.length > 0) {
+                    // If there are products, throw an error
+                    throw new Error("400");
+                } else {
+                    await db.run('DELETE FROM categories WHERE cid = (?)', cid);
+                }
             } else if (type === 'delete-product') {
                 const { pid } = req.body;
                 await db.run('DELETE FROM products WHERE pid = (?)', pid);
@@ -66,7 +75,14 @@ export default async function handler(req, res) {
             res.status(200).json({ success: true });
         } catch (error) {
             console.error(error);
-            res.status(500).json({ error: 'Server error' });
+            // Check if the error is the one we throw intentionally
+            if (error.message === "400") {
+                // Respond with a more specific status and message
+                res.status(400).json({ error: 'Cannot delete a category that has associated products.' });
+            } else {
+                // Handle other unexpected errors
+                res.status(500).json({ error: 'Server error' });
+            }
         }
     } else {
         res.status(405).json({ error: 'Method not allowed' });

@@ -84,45 +84,51 @@ export default function Product() {
             </Head>
 
             <main>
-                <div class="container">
+                <div className="container">
                     <header id="home">
-                        <div class="title">JAYDENTV MALL</div>
+                        <div className="title">JAYDENTV MALL</div>
                         <Cart
                             cartItems={cartItems}
                             changeCartItemQuantity={changeCartItemQuantity}
                             clearCart={clearCart}
                         />
                     </header>
-                    <div class="ref-link">
-                        <span><Link href="/">Home</Link></span>
-                        <span> &gt; </span>
-                        <span><Link href="" onClick={(e) => {
-                            e.preventDefault();
-                            router.push({
-                                pathname: `/${encodeURIComponent(category.name.toLowerCase())}`,
-                                query: { cid: category.cid },
-                            })
-                        }}>{category.name}</Link></span>
-                        <span> &gt; </span>
-                        <span><Link href="#home">{product.name}</Link></span>
+
+                    <div className="links">
+                        <span className="ref-link">
+                            <span><Link href="/">Home</Link></span>
+                            <span> &gt; </span>
+                            <span><Link href="" onClick={(e) => {
+                                e.preventDefault();
+                                router.push({
+                                    pathname: `/${encodeURIComponent(category.name.toLowerCase())}`,
+                                    query: { cid: category.cid },
+                                })
+                            }}>{category.name}</Link></span>
+                            <span> &gt; </span>
+                            <span><Link href="#home">{product.name}</Link></span>
+                        </span>
+                        <span className="admin-panel-link"><Link href="./admin" target="_blank">Admin Panel</Link></span>
                     </div>
-                    <div class="product">
-                        <div class="item">
-                            <img src="/img/suisei.gif" alt="" />
+                    <div className="product">
+                        <div className="item">
+                            <div className="image">
+                                <Image src={String.prototype.concat("/img/", product.image)} alt={product.image || "No image"} fill />
+                            </div>
                             <h2>{product.name}</h2>
                             <span>${product.price?.toFixed(2)}</span>
-                            <span>
-                                <button class="add-cart" onClick={() => addToCart(product)}>Add To Cart</button>
+                            <span className="add-cart">
+                                <button onClick={() => addToCart(product)}>Add To Cart</button>
                             </span>
                             <p>{product.description}</p>
                             <div>Inventory: {product.quantity}</div>
                             {product.quantity <= 3 && (
-                                <div class="inventory-alert">Only {product.quantity} left!</div>
+                                <div className="inventory-alert">Only {product.quantity} left!</div>
                             )}
                         </div>
                     </div>
                     <footer>
-                        <div class="footer">
+                        <div className="footer">
                             Thanks for shopping at JaydenTV Mall!!!
                         </div>
                     </footer>

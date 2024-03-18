@@ -12,19 +12,20 @@ export default function Admin() {
     const [selectedProduct, setSelectedProduct] = useState({});
     const [selectedImages, setSelectedImages] = useState({});
     const [isSubmitted, setIsSubmitted] = useState();
-    let i = 0;
+    const [isLoading, setIsLoading] = useState();
+
     useEffect(() => {
         // Fetch initial data
         getData('database')
             .then((data) => {
                 // Handle the fetched data
-                console.log(i++);
                 setCategories(data.categories);
                 setProducts(data.products);
                 setSelectedCategory({ name: "" });
                 setSelectedProduct({ cid: 0, name: "", price: "", description: "", quantity: "" });
                 setSelectedImages({});
-                setIsSubmitted(0);
+                setIsSubmitted(false);
+                setIsLoading(false);
             })
             .catch((error) => {
                 // Handle errors
@@ -32,14 +33,17 @@ export default function Admin() {
             });
     }, [isSubmitted]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
+        setIsLoading(true);
+
         // File
-        if (e.target.image) {
+        if (selectedImages[e.target.type.value + '-image']) {
             const fileFormData = new FormData();
-            fileFormData.set('image', e.target.image.files[0]);
-            postData('upload', fileFormData)
+            // const fileName = String.prototype.concat(file.name, '_', e.target.type === "add-category" || "edit-category" ? categories.slice(-1).cid + 1 : products.slice(-1).pid + 1);
+            fileFormData.set('image', selectedImages[e.target.type.value + '-image']);
+            await postData('upload', fileFormData)
                 .then((data) => {
                     if (data.success !== true) {
                         window.alert(JSON.stringify(data));
@@ -48,19 +52,22 @@ export default function Admin() {
                 .catch((error) => {
                     // Handle errors
                     console.error(error);
+                    window.alert(error);
+                    return;
                 });
         }
 
         // DB
         const dbFormData = new FormData(e.target);
-        dbFormData.set('image', e.target.image.files[0].name);
-        postData('database', Object.fromEntries(dbFormData))
+        if (selectedImages[e.target.type.value + '-image']) {
+            dbFormData.set('image', selectedImages[e.target.type.value + '-image'].name);
+        }
+        await postData('database', Object.fromEntries(dbFormData))
             .then((data) => {
                 // Handle the updated data
-                console.log(data);
                 if (data.success === true) {
                     window.alert("Success!");
-                    setIsSubmitted(1);
+                    setIsSubmitted(true);
                     e.target.reset();
                 } else {
                     window.alert(JSON.stringify(data));
@@ -84,12 +91,29 @@ export default function Admin() {
             setSelectedProduct(selected);
     }
 
+    const handleDrop = (e) => {
+        e.preventDefault();
+
+        const files = e.dataTransfer.files;
+        if (files && files[0] && files[0].type.startsWith('image/')) {
+            const file = files[0];
+            handleImageSelect({ target: { files: [file], id: e.target.id } });
+        } else {
+            alert('Only image files are allowed!');
+        }
+    };
+
     const handleImageSelect = (e) => {
         if (e.target.files && e.target.files.length > 0) {
             setSelectedImages({ ...selectedImages, [e.target.id]: e.target.files[0] });
         }
-        console.log(selectedImages)
     };
+
+    const handleImageRemove = (e) => {
+        e.preventDefault();
+
+        setSelectedImages({ ...selectedImages, [e.target.id]: null });
+    }
 
     return (
         <>
@@ -99,41 +123,63 @@ export default function Admin() {
                 <title>JaydenTV Mall Admin Panel</title>
             </Head>
 
-            <main class="admin-panel" >
-                <div class="panel-container">
+            <main className="admin-panel" >
+                {isLoading && (
+                    <div className="loading-screen">
+                        <div className="loader"></div>
+                        <div className="overlay"></div>
+                    </div>
+                )}
+                <div className="panel-container">
                     <header>
-                        <div class="title">
+                        <div className="title">
                             <h1>JAYDENTV MALL - ADMIN PANEL</h1>
                         </div>
                     </header>
-                    <div class="flex-container">
-                        <div class="add-category">
+
+                    <div className="links">
+                        <span className="admin-panel-link"><Link href="./" target="_blank">Back To Home Page</Link></span>
+                    </div>
+                    <div className="flex-container">
+                        <div className="add-category">
                             <form onSubmit={handleSubmit}>
                                 <input type="hidden" name="type" value="add-category" />
                                 <fieldset>
                                     <h3>Add Category</h3>
-                                    <div class="name">
-                                        <label for="name">Name</label>
+                                    <div className="name">
+                                        <label htmlFor="name">Name</label>
                                         <input type="text" name="name" id="name" required />
                                     </div>
-                                    <div class="image">
-                                        <label for="image">Image</label>
-                                        <input type="file" name="image" id="add-category-image" onChange={handleImageSelect} accept="image/png, image/jpeg, image/gif" />
-                                        {selectedImages['add-category-image'] && (
-                                            <img src={URL.createObjectURL(selectedImages['add-category-image'])} alt="Preview" />
-                                        )}
+                                    <div className="image">
+                                        <label htmlFor="image">Image</label>
+                                        <div className="drop-area"
+                                            id="add-category-image"
+                                            onDragOver={(e) => e.preventDefault()}
+                                            onDrop={handleDrop}>
+                                            {!selectedImages['add-category-image'] && (<>Drop image here or</>)}
+                                            {selectedImages['add-category-image'] && (
+                                                <>
+                                                    <figure>
+                                                        <img src={URL.createObjectURL(selectedImages['add-category-image'])} alt="Preview" />
+                                                        <figcaption>New Image: {selectedImages['add-category-image'].name}</figcaption>
+                                                    </figure>
+                                                    {/* <button id="add-category-image" onClick={handleImageRemove}>Remove Image</button> */}
+                                                </>
+                                            )}
+                                            <br /><input type="file" name="image" id="add-category-image" onChange={handleImageSelect} accept="image/png, image/jpeg, image/gif" />
+                                        </div>
                                     </div>
                                     <br />
                                     <button type="submit">Submit</button>
                                 </fieldset>
                             </form>
                         </div>
-                        <div class="delete-category">
+                        <div className="delete-category">
                             <form onSubmit={handleSubmit}>
                                 <input type="hidden" name="type" value="delete-category" />
                                 <fieldset>
                                     <h3>Delete Category</h3>
-                                    <div class="cid">
+                                    <div className="cid">
                                         <select name="cid" id="cid" required>
                                             <option hidden selected value="">-- SELECT --</option>
                                             {categories.map((category) => (
@@ -143,7 +189,7 @@ export default function Admin() {
                                             ))}
                                         </select>
                                     </div>
-                                    <div class="image">
+                                    <div className="image">
                                         <img src="" alt="" />
                                     </div>
                                     <br />
@@ -151,12 +197,12 @@ export default function Admin() {
                                 </fieldset>
                             </form>
                         </div>
-                        <div class="edit-category">
+                        <div className="edit-category">
                             <form onSubmit={handleSubmit}>
                                 <input type="hidden" name="type" value="edit-category" />
                                 <fieldset>
                                     <h3>Edit Category</h3>
-                                    <div class="cid">
+                                    <div className="cid">
                                         <select name="cid" id="cid" required onChange={handleCategorySelect}>
                                             <option hidden selected value="">-- SELECT --</option>
                                             {categories.map((category) => (
@@ -166,16 +212,31 @@ export default function Admin() {
                                             ))}
                                         </select>
                                     </div>
-                                    <div class="name">
-                                        <label for="name">Name</label>
+                                    <div className="name">
+                                        <label htmlFor="name">Name</label>
                                         <input type="text" name="name" id="name" required defaultValue={selectedCategory.name} />
                                     </div>
-                                    <div class="image">
-                                        <label for="image">Image</label>
-                                        <input type="file" name="image" id="editCategory" onChange={handleImageSelect} accept="image/png, image/jpeg, image/gif" />
-                                        {selectedImages.editCategory && (
-                                            <img src={URL.createObjectURL(selectedImages.editCategory)} alt="Preview" />
+                                    <div className="image">
+                                        <label htmlFor="image">Image</label>
+                                        {selectedCategory.image && (
+                                            <figure>
+                                                <img src={String.prototype.concat("/img/", selectedCategory.image)} alt="Preview" />
+                                                <figcaption>Original Image: {selectedCategory.image}</figcaption>
+                                            </figure>
                                         )}
+                                        <div className="drop-area"
+                                            id="edit-category-image"
+                                            onDragOver={(e) => e.preventDefault()}
+                                            onDrop={handleDrop}>
+                                            {!selectedImages['edit-category-image'] && (<>Drop image here or</>)}
+                                            {selectedImages['edit-category-image'] && (
+                                                <figure>
+                                                    <img src={URL.createObjectURL(selectedImages['edit-category-image'])} alt="Preview" />
+                                                    <figcaption>New Image: {selectedImages['edit-category-image'].name}</figcaption>
+                                                </figure>
+                                            )}
+                                            <br /><input type="file" name="image" id="edit-category-image" onChange={handleImageSelect} accept="image/png, image/jpeg, image/gif" />
+                                        </div>
                                     </div>
                                     <br />
                                     <button type="submit">Submit</button>
@@ -185,14 +246,14 @@ export default function Admin() {
                     </div>
                     <br />
                     <br />
-                    <div class="flex-container">
-                        <div class="add-product">
+                    <div className="flex-container">
+                        <div className="add-product">
                             <form onSubmit={handleSubmit}>
                                 <input type="hidden" name="type" value="add-product" />
                                 <fieldset>
                                     <h3>New Product</h3>
-                                    <div class="cid">
-                                        <label for="cid">Category</label>
+                                    <div className="cid">
+                                        <label htmlFor="cid">Category</label>
                                         <select name="cid" id="cid" required>
                                             <option hidden selected value="">-- SELECT --</option>
                                             {categories.map((category) => (
@@ -202,40 +263,52 @@ export default function Admin() {
                                             ))}
                                         </select>
                                     </div>
-                                    <div class="name">
-                                        <label for="name">Name</label>
+                                    <div className="name">
+                                        <label htmlFor="name">Name</label>
                                         <input type="text" name="name" id="name" required />
                                     </div>
-                                    <div class="price">
-                                        <label for="price">Price</label>
-                                        <input type="number" name="price" id="price" required />
+                                    <div className="price">
+                                        <label htmlFor="price">Price</label>
+                                        <input type="double" name="price" id="price" required />
                                     </div>
-                                    <div class="description">
-                                        <label for="description">Description</label>
+                                    <div className="description">
+                                        <label htmlFor="description">Description</label>
                                         <textarea name="description" id="description" cols="20" rows="2" required></textarea>
                                     </div>
-                                    <div class="quantity">
-                                        <label for="quantity">Quantity</label>
+                                    <div className="quantity">
+                                        <label htmlFor="quantity">Quantity</label>
                                         <input type="number" name="quantity" id="quantity" required />
                                     </div>
-                                    <div class="image">
-                                        <label for="image">Image</label>
-                                        <input type="file" name="image" id="add-product-image" onChange={handleImageSelect} accept="image/png, image/jpeg, image/gif" />
-                                        {selectedImages['add-product-image'] && (
-                                            <img src={URL.createObjectURL(selectedImages['add-product-image'])} alt="Preview" />
-                                        )}
+                                    <div className="image">
+                                        <label htmlFor="image">Image</label>
+                                        <div className="drop-area"
+                                            id="add-product-image"
+                                            onDragOver={(e) => e.preventDefault()}
+                                            onDrop={handleDrop}>
+                                            {!selectedImages['add-product-image'] && (<>Drop image here or</>)}
+                                            {selectedImages['add-product-image'] && (
+                                                <>
+                                                    <figure>
+                                                        <img src={URL.createObjectURL(selectedImages['add-product-image'])} alt="Preview" />
+                                                        <figcaption>New Image: {selectedImages['add-product-image'].name}</figcaption>
+                                                    </figure>
+                                                    {/* <button id="add-product-image" onClick={handleImageRemove}>Remove Image</button> */}
+                                                </>
+                                            )}
+                                            <br /><input type="file" name="image" id="add-product-image" onChange={handleImageSelect} accept="image/png, image/jpeg, image/gif" />
+                                        </div>
                                     </div>
                                     <br />
                                     <button type="submit">Submit</button>
                                 </fieldset>
                             </form>
                         </div>
-                        <div class="delete-product">
+                        <div className="delete-product">
                             <form onSubmit={handleSubmit}>
                                 <input type="hidden" name="type" value="delete-product" />
                                 <fieldset>
                                     <h3>Delete Product</h3>
-                                    <div class="name">
+                                    <div className="name">
                                         <select name="pid" id="pid" required>
                                             <option hidden selected value="">-- SELECT --</option>
                                             {products.map((product) => (
@@ -245,7 +318,7 @@ export default function Admin() {
                                             ))}
                                         </select>
                                     </div>
-                                    <div class="image">
+                                    <div className="image">
                                         <img src="" alt="" />
                                     </div>
                                     <br />
@@ -253,12 +326,12 @@ export default function Admin() {
                                 </fieldset>
                             </form>
                         </div>
-                        <div class="edit-product">
+                        <div className="edit-product">
                             <form onSubmit={handleSubmit}>
                                 <input type="hidden" name="type" value="edit-product" />
                                 <fieldset>
                                     <h3>Edit Product</h3>
-                                    <div class="pid">
+                                    <div className="pid">
                                         <select name="pid" id="pid" required onChange={handleProductSelect}>
                                             <option hidden selected value="">-- SELECT --</option>
                                             {products.map((product) => (
@@ -268,8 +341,8 @@ export default function Admin() {
                                             ))}
                                         </select>
                                     </div>
-                                    <div class="cid">
-                                        <label for="cid">Category</label>
+                                    <div className="cid">
+                                        <label htmlFor="cid">Category</label>
                                         <select name="cid" id="cid" required >
                                             <option hidden selected value=""></option>
                                             {categories.map((category) => (
@@ -279,28 +352,43 @@ export default function Admin() {
                                             ))}
                                         </select>
                                     </div>
-                                    <div class="name">
-                                        <label for="name">Name</label>
+                                    <div className="name">
+                                        <label htmlFor="name">Name</label>
                                         <input type="text" name="name" id="name" required defaultValue={selectedProduct.name} />
                                     </div>
-                                    <div class="price">
-                                        <label for="price">Price</label>
+                                    <div className="price">
+                                        <label htmlFor="price">Price</label>
                                         <input type="number" name="price" id="price" required defaultValue={selectedProduct.price} />
                                     </div>
-                                    <div class="description">
-                                        <label for="description">Description</label>
+                                    <div className="description">
+                                        <label htmlFor="description">Description</label>
                                         <textarea name="description" id="description" cols="20" rows="2" required defaultValue={selectedProduct.description} ></textarea>
                                     </div>
-                                    <div class="quantity">
-                                        <label for="quantity">Quantity</label>
+                                    <div className="quantity">
+                                        <label htmlFor="quantity">Quantity</label>
                                         <input type="number" name="quantity" id="quantity" required defaultValue={selectedProduct.quantity} />
                                     </div>
-                                    <div class="image">
-                                        <label for="image">Image</label>
-                                        <input type="file" name="image" id="editProduct" onChange={handleImageSelect} accept="image/png, image/jpeg, image/gif" />
-                                        {selectedImages.editProduct && (
-                                            <img src={URL.createObjectURL(selectedImages.editProduct)} alt="Preview" />
+                                    <div className="image">
+                                        <label htmlFor="image">Image</label>
+                                        {selectedProduct.image && (
+                                            <figure>
+                                                <img src={String.prototype.concat("/img/", selectedProduct.image)} alt="Preview" />
+                                                <figcaption>Original Image: {selectedProduct.image}</figcaption>
+                                            </figure>
                                         )}
+                                        <div className="drop-area"
+                                            id="edit-product-image"
+                                            onDragOver={(e) => e.preventDefault()}
+                                            onDrop={handleDrop}>
+                                            {!selectedImages['edit-product-image'] && (<>Drop image here or</>)}
+                                            {selectedImages['edit-product-image'] && (
+                                                <figure>
+                                                    <img src={URL.createObjectURL(selectedImages['edit-product-image'])} alt="Preview" />
+                                                    <figcaption>New Image: {selectedImages['edit-product-image'].name}</figcaption>
+                                                </figure>
+                                            )}
+                                            <br /><input type="file" name="image" id="edit-product-image" onChange={handleImageSelect} accept="image/png, image/jpeg, image/gif" />
+                                        </div>
                                     </div>
                                     <br />
                                     <button type="submit">Submit</button>
@@ -308,6 +396,7 @@ export default function Admin() {
                             </form>
                         </div>
                     </div>
+                    <footer></footer>
                 </div>
             </main>
         </>

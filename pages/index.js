@@ -65,9 +65,9 @@ export default function Home() {
       </Head>
 
       <main>
-        <div class="container">
+        <div className="container">
           <header id="home">
-            <div class="title">JAYDENTV MALL</div>
+            <div className="title">JAYDENTV MALL</div>
             <Cart
               cartItems={cartItems}
               changeCartItemQuantity={changeCartItemQuantity}
@@ -75,27 +75,30 @@ export default function Home() {
             />
           </header>
 
-          <div class="ref-link">
-            <span><Link href="">Home</Link></span>
+          <div className="links">
+            <span className="ref-link"><Link href="">Home</Link></span>
+            <span className="admin-panel-link"><Link href="./admin" target="_blank">Admin Panel</Link></span>
           </div>
-          <div class="list-of-items">
+          <div className="list-of-items">
             <h1>Catagories</h1>
-            <div class="catagories">
+            <div className="catagories">
               {categories.map((category) => (
-                <div class="item" key={category.cid} onClick={() => {
+                <div className="item" key={category.cid} onClick={() => {
                   router.push({
-                    pathname: `/${encodeURIComponent(category.name.toLowerCase())}`,
+                    pathname: `/${encodeURIComponent(category.name.toLowerCase().replace(/\s+/g, '-'))}`,
                     query: { cid: category.cid },
                   })
                 }}>
-                  <img src="/img/suisei.gif" alt="" />
+                  <div className="image">
+                    <Image src={String.prototype.concat("/img/", category.image)} alt={category.image || "No image"} fill />
+                  </div>
                   <h2>{category.name}</h2>
                 </div>
               ))}
             </div>
           </div>
           <footer>
-            <div class="footer">
+            <div className="footer">
               Thanks for shopping at JaydenTV Mall!!!
             </div>
           </footer>
