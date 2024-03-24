@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import DOMPurify from 'dompurify';
 
 import { useState, useEffect } from 'react';
 import { getData, postData } from '../util/api';
@@ -47,12 +48,15 @@ export default function Admin() {
                 .then((data) => {
                     if (data.success !== true) {
                         window.alert(JSON.stringify(data));
+                        setIsLoading(false);
+                        return;
                     }
                 })
                 .catch((error) => {
                     // Handle errors
                     console.error(error);
                     window.alert(error);
+                    setIsLoading(false);
                     return;
                 });
         }
@@ -60,9 +64,13 @@ export default function Admin() {
         // DB
         const dbFormData = new FormData(e.target);
         if (selectedImages[e.target.type.value + '-image']) {
-            dbFormData.set('image', selectedImages[e.target.type.value + '-image'].name);
+            dbFormData.set('image', selectedImages[e.target.type.value + '-image'].name.replace(/ /g, "_").replace(/[^a-zA-Z0-9_.-]+/g, ""));
         }
-        await postData('database', Object.fromEntries(dbFormData))
+        const cleanDbFormData = new FormData();
+        for (let [key, value] of dbFormData.entries()) {
+            cleanDbFormData.append(key, DOMPurify.sanitize(value));
+        }
+        await postData('database', Object.fromEntries(cleanDbFormData))
             .then((data) => {
                 // Handle the updated data
                 if (data.success === true) {
@@ -71,11 +79,14 @@ export default function Admin() {
                     e.target.reset();
                 } else {
                     window.alert(JSON.stringify(data));
+                    setIsLoading(false);
                 }
             })
             .catch((error) => {
                 // Handle errors
                 console.error(error);
+                window.alert(error);
+                setIsLoading(false);
             });
     };
 

@@ -1,3 +1,5 @@
+import { setup } from '../lib/csrf';
+
 export async function getData(endpoint) {
     try {
         const response = await fetch(`/api/${endpoint}`, {
@@ -34,3 +36,7 @@ export async function postData(endpoint, formData) {
         throw new Error('Failed to post data to the API');
     }
 }
+
+export const getServerSideProps = setup(async ({ req, res }) => {
+    return { props: {} }
+});

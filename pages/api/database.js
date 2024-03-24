@@ -1,7 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
-import { open } from "sqlite";
+import { open } from 'sqlite';
+import { csrf } from '../../lib/csrf.js';
 
-export default async function handler(req, res) {
+export default csrf(async function handler(req, res) {
     //connect to DB
     const db = await open({
         filename: "./mall.db", // Specify the database file path
@@ -32,9 +33,15 @@ export default async function handler(req, res) {
             // ADD
             if (type === 'add-category') {
                 const { name, image } = req.body;
+                if (!name) {
+                    return res.status(400).json({ error: 'Missing required fields' });
+                }
                 await db.run('INSERT INTO categories (name, image) VALUES (?, ?)', name, image);
             } else if (type === 'add-product') {
                 const { cid, name, price, description, quantity, image } = req.body;
+                if (!cid || !name || !price || !description || !quantity) {
+                    return res.status(400).json({ error: 'Missing required fields' });
+                }
                 await db.run('INSERT INTO products (cid, name, price, description, quantity, image) VALUES (?, ?, ?, ?, ?, ?)',
                     cid, name, price, description, quantity, image
                 );
@@ -58,9 +65,15 @@ export default async function handler(req, res) {
             // EDIT
             else if (type === 'edit-category') {
                 const { cid, name } = req.body;
+                if (!name) {
+                    return res.status(400).json({ error: 'Missing required fields' });
+                }
                 await db.run('UPDATE categories SET name = (?) WHERE cid = (?)', name, cid);
             } else if (type === 'edit-product') {
                 const { pid, cid, name, price, description, quantity } = req.body;
+                if (!cid || !name || !price || !description || !quantity) {
+                    return res.status(400).json({ error: 'Missing required fields' });
+                }
                 await db.run('UPDATE products SET cid = (?), name = (?), price = (?), description = (?), quantity = (?) WHERE pid = (?)',
                     cid, name, price, description, quantity, pid
                 );
@@ -87,4 +100,4 @@ export default async function handler(req, res) {
     } else {
         res.status(405).json({ error: 'Method not allowed' });
     }
-}
+});
