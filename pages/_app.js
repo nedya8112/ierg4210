@@ -1,5 +1,6 @@
 import "../styles/style.css";
 import { useEffect } from 'react';
+import { SessionProvider } from "next-auth/react";
 
 export default function App({ Component, pageProps }) {
   // let audio;
@@ -25,8 +26,10 @@ export default function App({ Component, pageProps }) {
 
   return (
     <>
-      <Component {...pageProps} />
-      {/* <audio id="bgm" loop preload="auto" src="./StellarStellar.mp3" /> */}
+      <SessionProvider session={pageProps.session}>
+        <Component {...pageProps} />
+        {/* <audio id="bgm" loop preload="auto" src="./StellarStellar.mp3" /> */}
+      </SessionProvider>
     </>
   );
 }

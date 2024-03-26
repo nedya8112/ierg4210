@@ -1,11 +1,12 @@
 const sqlite3 = require('sqlite3').verbose();
 import { open } from 'sqlite';
 import { csrf } from '../../lib/csrf.js';
+import path from 'path';
 
 export default csrf(async function handler(req, res) {
     //connect to DB
     const db = await open({
-        filename: "./mall.db", // Specify the database file path
+        filename: path.resolve(process.cwd(), 'mall.db'), // This ensures the path is always correct
         driver: sqlite3.Database, // Specify the database driver (sqlite3 in this case)
     });
 
@@ -50,7 +51,7 @@ export default csrf(async function handler(req, res) {
             else if (type === 'delete-category') {
                 const { cid } = req.body;
                 // Check if the category has products
-                const products = await db.all('SELECT * FROM products WHERE cid = ?', cid);
+                const products = await db.all('SELECT * FROM products WHERE cid = (?)', cid);
                 if (products.length > 0) {
                     // If there are products, throw an error
                     throw new Error("400");

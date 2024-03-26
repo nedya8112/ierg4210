@@ -1,13 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 
 const Cart = ({ cartItems, changeCartItemQuantity, clearCart }) => {
+    const { data, status } = useSession();
 
     return (
         <div className="cart">
             {<>
-                SHOPPING LIST ${cartItems.reduce((acc, obj) =>
+                {status === 'authenticated' ? data.user.email.toUpperCase() : "GUEST"}'S SHOPPING LIST ${cartItems.reduce((acc, obj) =>
                     acc + obj.price * obj.quantity, 0).toFixed(2)}
             </>}
             <div className="cart-tab">

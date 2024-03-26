@@ -2,16 +2,18 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react';
-import { getData, postData } from '../util/api';
+import { getData, postData } from '../utils/api';
 import Cart from '../components/cart';
 
 export default function Home() {
+  const router = useRouter();
+  const { data, status } = useSession();
 
   const [categories, setCategories] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-  const router = useRouter();
 
   useEffect(() => {
     // Fetch initial data
@@ -77,7 +79,15 @@ export default function Home() {
 
           <div className="links">
             <span className="ref-link"><Link href="">Home</Link></span>
-            <span className="admin-panel-link"><Link href="./admin" target="_blank">Admin Panel</Link></span>
+            {status === 'authenticated' && data.user.isAdmin == true && (
+              <span className="admin-panel-link"><Link href="./admin" target="_blank">Admin Panel</Link></span>
+            )}
+            {status === 'authenticated' ? (
+              <span className="logout-link"><Link href="" onClick={() => signOut({ redirect: false })}>Logout</Link></span>
+            ) : (
+              <span className="login-link"><Link href="/login">Login</Link></span>
+            )
+            }
           </div>
           <div className="list-of-items">
             <h1>Catagories</h1>
